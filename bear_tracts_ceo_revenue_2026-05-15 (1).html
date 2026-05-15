@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bear Tracts — Revenue Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #ffffff;
+  --bg: #f5f4f0;
+  --card: #ffffff;
+  --ink: #1a1a1a;
+  --ink2: #555550;
+  --ink3: #999990;
+  --rule: #e8e6e0;
+  --green: #1a7a4a;
+  --green-bg: #edf7f1;
+  --green-bar: #2db36e;
+  --red: #c0392b;
+  --red-bg: #fdf0ee;
+  --red-bar: #e05444;
+  --amber: #9a6200;
+  --amber-bg: #fdf6e3;
+  --amber-bar: #f0a030;
+  --accent: #2c5fa8;
+  --display: 'Playfair Display', Georgia, serif;
+  --body: 'Outfit', sans-serif;
+}
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-brand {
+  font-family: var(--display);
+  font-size: 22px;
+  color: var(--ink);
+  letter-spacing: -.01em;
+}
+.hdr-brand span { color: var(--accent); }
+.hdr-meta {
+  font-size: 12px;
+  color: var(--ink3);
+  text-align: right;
+  line-height: 1.7;
+}
+.hdr-meta strong { color: var(--ink2); }
+
+/* ── PORTFOLIO STRIP ── */
+.port-strip {
+  background: var(--white);
+  border-bottom: 2px solid var(--rule);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+}
+.port-cell {
+  padding: 16px 28px 16px 0;
+  margin-right: 28px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  white-space: nowrap;
+}
+.port-cell:last-child { border-right: none; }
+.port-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink3);
+}
+.port-val {
+  font-family: var(--display);
+  font-size: 26px;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.port-sub { font-size: 11px; color: var(--ink3); }
+
+/* ── MONTH NAV ── */
+.mnav {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.mnav::-webkit-scrollbar { display: none; }
+.mtab {
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+  position: relative;
+}
+.mtab:hover { color: var(--ink2); }
+.mtab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.mtab-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+/* ── MAIN CARD AREA ── */
+.card-stage {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* BIG CARD */
+.big-card {
+  flex: 1;
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  overflow: hidden;
+  animation: fadeUp .25s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.big-card-top {
+  padding: 32px 36px 28px;
+  border-bottom: 1px solid var(--rule);
+}
+.big-month {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+.big-status-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.big-headline {
+  font-family: var(--display);
+  font-size: 42px;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+}
+.big-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-red   { background: var(--red-bg);   color: var(--red); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+
+.big-sentence {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--ink2);
+  line-height: 1.6;
+  max-width: 580px;
+}
+.big-sentence strong { color: var(--ink); font-weight: 600; }
+
+/* THE BAR */
+.bar-zone {
+  padding: 24px 36px 28px;
+  border-bottom: 1px solid var(--rule);
+}
+.bar-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink3);
+  margin-bottom: 16px;
+}
+.bar-outer {
+  height: 48px;
+  background: #f0ede8;
+  border-radius: 6px;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 10px;
+}
+.bar-booked-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  border-radius: 6px 0 0 6px;
+  transition: width .3s ease;
+}
+.bar-proj-fill {
+  position: absolute;
+  top: 0; bottom: 0;
+  border-radius: 0;
+  transition: width .2s ease, left .3s ease;
+  opacity: .55;
+}
+.bar-eom-marker {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 3px;
+  border-radius: 2px;
+  z-index: 3;
+}
+.bar-eom-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid #f5d990;
+}
+.bar-legend {
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--ink3);
+  flex-wrap: wrap;
+}
+.bar-leg-item { display: flex; align-items: center; gap: 6px; }
+.bar-leg-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* SLIDER ZONE */
+.slider-zone {
+  padding: 22px 36px 26px;
+  border-bottom: 1px solid var(--rule);
+  background: #fafaf8;
+}
+.slider-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.slider-label-text {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink3);
+}
+.slider-pct {
+  font-family: var(--display);
+  font-size: 28px;
+  color: var(--accent);
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.slider-anchor-note {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+.slider-anchor-note strong { color: var(--amber); }
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--rule);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--white);
+  box-shadow: 0 1px 6px rgba(0,0,0,.2);
+  cursor: pointer;
+  transition: transform .1s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+.slider-subtext {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ink3);
+}
+.slider-subtext strong { color: var(--ink2); }
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--rule);
+}
+.stat-cell {
+  padding: 20px 24px;
+  border-right: 1px solid var(--rule);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+.stat-val {
+  font-family: var(--display);
+  font-size: 24px;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-sub { font-size: 11px; color: var(--ink3); }
+.up   { color: var(--green); }
+.dn   { color: var(--red); }
+.flat { color: var(--ink3); }
+
+/* SIDE PANEL */
+.side-panel {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.side-card {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.05);
+  padding: 20px;
+}
+.side-card-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink3);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.all-months-list { display: flex; flex-direction: column; gap: 0; }
+.aml-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  transition: background .1s;
+  border-radius: 4px;
+  padding: 9px 6px;
+}
+.aml-row:hover { background: var(--bg); }
+.aml-row:last-child { border-bottom: none; }
+.aml-left { display: flex; align-items: center; gap: 8px; }
+.aml-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.aml-month { font-size: 12px; font-weight: 500; color: var(--ink2); }
+.aml-right { text-align: right; }
+.aml-val { font-size: 12px; font-weight: 600; }
+.aml-sub { font-size: 10px; color: var(--ink3); }
+
+.rate-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.rate-tag-up   { background: var(--green-bg); color: var(--green); }
+.rate-tag-dn   { background: var(--red-bg);   color: var(--red); }
+.rate-tag-flat { background: #f0ede8; color: var(--ink3); }
+.rate-note { font-size: 11px; color: var(--ink3); line-height: 1.5; }
+
+/* NAV ARROWS */
+.nav-arrows {
+  display: flex;
+  gap: 8px;
+  padding: 0 32px 24px;
+  justify-content: flex-end;
+}
+.nav-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--ink2);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.nav-btn:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
+.nav-btn:disabled { opacity: .3; cursor: default; }
+.nav-btn:disabled:hover { background: var(--white); color: var(--ink2); border-color: var(--rule); }
+
+footer {
+  padding: 12px 32px;
+  border-top: 1px solid var(--rule);
+  background: var(--white);
+  font-size: 10px;
+  color: var(--ink3);
+  display: flex;
+  justify-content: space-between;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">Bear <span>Tracts</span></div>
+  <div class="hdr-meta">
+    Report as of <strong>May 11, 2026</strong> &nbsp;·&nbsp; vs prior week <strong>May 4, 2026</strong><br>
+    Slider default = last year's actual fill rate for each month
+  </div>
+</div>
+
+<div class="port-strip" id="port-strip"></div>
+
+<div class="mnav" id="mnav"></div>
+
+<div class="card-stage">
+  <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+    <div class="big-card" id="big-card"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">←</button>
+      <button class="nav-btn" id="btn-next" onclick="navigate(1)">→</button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="side-card">
+      <div class="side-card-title">If Projected Fill Rate Is Hit</div>
+      <div class="all-months-list" id="all-months-list"></div>
+    </div>
+    <div class="side-card" id="rate-card"></div>
+  </div>
+</div>
+
+<footer>
+  <span>Rev &amp; Research · Bear Tracts · CEO Revenue Report</span>
+  <span>EOM anchor = 2025 actual fill rate by month</span>
+</footer>
+
+<script>
+const DATA = [
+  {
+    "month": "2026-05",
+    "label": "May 2026",
+    "short": "May",
+    "bookable": 210245,
+    "open": 1127,
+    "rate": 187,
+    "prior_open": 1720,
+    "prior_rate": 197,
+    "eom_target": 304636,
+    "cy_booked": 416135,
+    "sdly": 281678,
+    "eom_occ": 0.4026
+  },
+  {
+    "month": "2026-06",
+    "label": "June 2026",
+    "short": "Jun",
+    "bookable": 406007,
+    "open": 1263,
+    "rate": 321,
+    "prior_open": 1402,
+    "prior_rate": 352,
+    "eom_target": 818474,
+    "cy_booked": 870487,
+    "sdly": 671317,
+    "eom_occ": 0.7677
+  },
+  {
+    "month": "2026-07",
+    "label": "July 2026",
+    "short": "Jul",
+    "bookable": 1214881,
+    "open": 2305,
+    "rate": 527,
+    "prior_open": 2359,
+    "prior_rate": 572,
+    "eom_target": 887894,
+    "cy_booked": 591158,
+    "sdly": 440487,
+    "eom_occ": 0.8203
+  },
+  {
+    "month": "2026-08",
+    "label": "August 2026",
+    "short": "Aug",
+    "bookable": 995102,
+    "open": 2864,
+    "rate": 347,
+    "prior_open": 2959,
+    "prior_rate": 353,
+    "eom_target": 488723,
+    "cy_booked": 229869,
+    "sdly": 129294,
+    "eom_occ": 0.5465
+  },
+  {
+    "month": "2026-09",
+    "label": "September 2026",
+    "short": "Sep",
+    "bookable": 993739,
+    "open": 3076,
+    "rate": 323,
+    "prior_open": 3158,
+    "prior_rate": 330,
+    "eom_target": 245712,
+    "cy_booked": 72454,
+    "sdly": 40365,
+    "eom_occ": 0.3658
+  },
+  {
+    "month": "2026-10",
+    "label": "October 2026",
+    "short": "Oct",
+    "bookable": 1508994,
+    "open": 3185,
+    "rate": 474,
+    "prior_open": 3263,
+    "prior_rate": 486,
+    "eom_target": 711582,
+    "cy_booked": 88158,
+    "sdly": 45567,
+    "eom_occ": 0.764
+  },
+  {
+    "month": "2026-11",
+    "label": "November 2026",
+    "short": "Nov",
+    "bookable": 1741774,
+    "open": 3227,
+    "rate": 540,
+    "prior_open": 3287,
+    "prior_rate": 550,
+    "eom_target": 686929,
+    "cy_booked": 24431,
+    "sdly": 30539,
+    "eom_occ": 0.5885
+  },
+  {
+    "month": "2026-12",
+    "label": "December 2026",
+    "short": "Dec",
+    "bookable": 2454549,
+    "open": 3357,
+    "rate": 731,
+    "prior_open": 3419,
+    "prior_rate": 748,
+    "eom_target": 851471,
+    "cy_booked": 20695,
+    "sdly": 3490,
+    "eom_occ": 0.6097
+  }
+];
+
+const fills = {};
+DATA.forEach(d => fills[d.month] = d.eom_occ);
+let current = 0;
+
+function fmt$(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M';
+  if (n >= 1000) return '$' + (n/1000).toFixed(0) + 'K';
+  return '$' + Math.round(n).toLocaleString();
+}
+function fmtPct(n) { return Math.round(n*100) + '%'; }
+
+function calc(d, fill) {
+  const projNights = Math.round(d.open * fill);
+  const projRev = projNights * d.rate;
+  const total = d.cy_booked + projRev;
+  const gap = total - d.eom_target;
+  const bevenFill = d.cy_booked < d.eom_target
+    ? (d.eom_target - d.cy_booked) / (d.open * d.rate)
+    : 0;
+  return { projNights, projRev, total, gap, bevenFill };
+}
+
+function statusOf(d, c) {
+  if (d.cy_booked >= d.eom_target) return 'green';
+  if (c.gap >= 0) return 'green';
+  if (c.gap > -80000) return 'amber';
+  return 'red';
+}
+
+function colorOf(s) {
+  return s === 'green' ? 'var(--green-bar)' : s === 'amber' ? 'var(--amber-bar)' : 'var(--red-bar)';
+}
+
+function rateNeededHTML(d, c) {
+  if (d.cy_booked >= d.eom_target) {
+    return `
+      <div class="stat-label">Rate Needed to Hit Target</div>
+      <div class="stat-val up">Already there</div>
+      <div class="stat-sub">Booked revenue already exceeds EOM</div>
+    `;
+  }
+  if (c.projNights <= 0) {
+    return `
+      <div class="stat-label">Rate Needed to Hit Target</div>
+      <div class="stat-val flat">—</div>
+      <div class="stat-sub">Set fill rate above 0%</div>
+    `;
+  }
+  const revenueNeeded = d.eom_target - d.cy_booked;
+  const rateNeeded = Math.round(revenueNeeded / c.projNights);
+  const diff = rateNeeded - d.rate;
+  const color = diff <= 0 ? 'up' : diff < 50 ? 'flat' : 'dn';
+  const note = diff <= 0
+    ? `Current $${d.rate}/nt is already enough`
+    : `Need $${Math.abs(diff)} more per night than current $${d.rate}`;
+  return `
+    <div class="stat-label">Rate Needed to Hit Target</div>
+    <div class="stat-val ${color}" id="rate-needed-val">$${rateNeeded.toLocaleString()}</div>
+    <div class="stat-sub" id="rate-needed-sub">${note}</div>
+  `;
+}
+
+function buildPortStrip() {
+  let totalCY = 0, totalEOM = 0, totalBookable = 0, totalOpen = 0;
+  let greenCount = 0;
+  DATA.forEach(d => {
+    const c = calc(d, fills[d.month]);
+    totalCY += d.cy_booked;
+    totalEOM += d.eom_target;
+    totalBookable += d.bookable;
+    totalOpen += d.open;
+    if (statusOf(d,c) === 'green') greenCount++;
+  });
+  const vsSDLY = totalCY - DATA.reduce((a,d)=>a+d.sdly,0);
+  document.getElementById('port-strip').innerHTML = `
+    <div class="port-cell">
+      <div class="port-label">Total Booked Revenue</div>
+      <div class="port-val" style="color:var(--accent)">${fmt$(totalCY)}</div>
+      <div class="port-sub">vs last year: <strong style="color:${vsSDLY>=0?'var(--green)':'var(--red)'}">${vsSDLY>=0?'+':''}${fmt$(vsSDLY)}</strong></div>
+    </div>
+    <div class="port-cell">
+      <div class="port-label">Still Bookable</div>
+      <div class="port-val">${fmt$(totalBookable)}</div>
+      <div class="port-sub">${totalOpen.toLocaleString()} open nights remaining</div>
+    </div>
+    <div class="port-cell">
+      <div class="port-label">Months On Track</div>
+      <div class="port-val" style="color:var(--green)">${greenCount} of ${DATA.length}</div>
+      <div class="port-sub">at current slider settings</div>
+    </div>
+    <div class="port-cell">
+      <div class="port-label">Portfolio EOM Target</div>
+      <div class="port-val">${fmt$(totalEOM)}</div>
+      <div class="port-sub">last year's final result</div>
+    </div>
+  `;
+}
+
+function buildNav() {
+  document.getElementById('mnav').innerHTML = DATA.map((d,i) => {
+    const c = calc(d, fills[d.month]);
+    const s = statusOf(d,c);
+    const col = s==='green'?'var(--green-bar)':s==='amber'?'var(--amber-bar)':'var(--red-bar)';
+    return `<div class="mtab ${i===current?'active':''}" onclick="goTo(${i})" id="mtab-${i}">
+      <span class="mtab-dot" style="background:${col}"></span>${d.short}
+    </div>`;
+  }).join('');
+}
+
+function buildCard() {
+  const d = DATA[current];
+  const fill = fills[d.month];
+  const c = calc(d, fill);
+  const s = statusOf(d,c);
+
+  // Headline number + color
+  let headline, headlineColor, badgeText, badgeClass, sentence;
+  if (d.cy_booked >= d.eom_target) {
+    const over = d.cy_booked - d.eom_target;
+    headline = '+' + fmt$(over);
+    headlineColor = 'var(--green)';
+    badgeText = '✓ Already Beat Last Year';
+    badgeClass = 'badge-green';
+    sentence = `We've already booked <strong>${fmt$(over)} more</strong> than we finished with all of last ${d.short}. Every open night from here is extra.`;
+  } else if (c.gap >= 0) {
+    headline = '+' + fmt$(c.gap);
+    headlineColor = 'var(--green)';
+    badgeText = '✓ On Track';
+    badgeClass = 'badge-green';
+    const beven = fmtPct(Math.min(c.bevenFill, 1));
+    sentence = `At <strong>${fmtPct(fill)} fill</strong> on open nights, we project finishing <strong>${fmt$(c.gap)} above</strong> last year's result. We only need <strong>${beven} fill</strong> to break even.`;
+  } else if (s === 'amber') {
+    headline = fmt$(Math.abs(c.gap));
+    headlineColor = 'var(--amber)';
+    badgeText = '~ Within Reach';
+    badgeClass = 'badge-amber';
+    sentence = `At <strong>${fmtPct(fill)} fill</strong>, we're <strong>${fmt$(Math.abs(c.gap))} short</strong> of last year. A small push on open nights gets us there.`;
+  } else {
+    headline = '−' + fmt$(Math.abs(c.gap));
+    headlineColor = 'var(--red)';
+    badgeText = '⚠ Needs Attention';
+    badgeClass = 'badge-red';
+    const beven = c.bevenFill <= 1 ? fmtPct(c.bevenFill) : 'more than available';
+    sentence = `At <strong>${fmtPct(fill)} fill</strong>, we project finishing <strong>${fmt$(Math.abs(c.gap))} below</strong> last year. We'd need <strong>${beven} fill</strong> to break even.`;
+  }
+
+  // Bar math
+  const maxVal = Math.max(c.total, d.eom_target, d.cy_booked) * 1.08;
+  const bookedW = Math.min((d.cy_booked / maxVal) * 100, 100);
+  const projW   = Math.min((c.projRev / maxVal) * 100, 40); // cap visual width of proj
+  const eomW    = Math.min((d.eom_target / maxVal) * 100, 98);
+  const barColor = colorOf(s);
+
+  // Rate movement
+  const rateChg = d.rate - d.prior_rate;
+  const nightsChg = d.prior_open - d.open; // positive = booked
+  const vsSDLY = d.cy_booked - d.sdly;
+
+  document.getElementById('big-card').innerHTML = `
+    <div class="big-card-top">
+      <div class="big-month">${d.label}</div>
+      <div class="big-status-row">
+        <div class="big-headline" style="color:${headlineColor}">${headline}</div>
+        <div class="big-badge ${badgeClass}">${badgeText}</div>
+      </div>
+      <div class="big-sentence">${sentence}</div>
+    </div>
+
+    <div class="bar-zone">
+      <div class="bar-title">Revenue — Booked vs Projected vs Target</div>
+      <div class="bar-outer">
+        <div class="bar-booked-fill" style="width:${bookedW}%;background:${barColor};opacity:.8"></div>
+        <div class="bar-proj-fill" id="proj-fill" style="left:${bookedW}%;width:${projW}%;background:${barColor}"></div>
+        <div class="bar-eom-marker" style="left:calc(${eomW}% - 1px);background:var(--amber-bar)">
+          <div class="bar-eom-tip">Last Year EOM ${fmt$(d.eom_target)}</div>
+        </div>
+      </div>
+      <div class="bar-legend">
+        <div class="bar-leg-item"><div class="bar-leg-swatch" style="background:${barColor};opacity:.8"></div> Booked: ${fmt$(d.cy_booked)}</div>
+        <div class="bar-leg-item"><div class="bar-leg-swatch" style="background:${barColor};opacity:.5"></div> Projected: <span id="proj-leg">+${fmt$(c.projRev)}</span></div>
+        <div class="bar-leg-item"><div class="bar-leg-swatch" style="background:var(--amber-bar)"></div> Last Year Final: ${fmt$(d.eom_target)}</div>
+      </div>
+    </div>
+
+    <div class="slider-zone">
+      <div class="slider-top">
+        <div>
+          <div class="slider-label-text">Projected Fill Rate</div>
+          <div class="slider-anchor-note">Default = <strong>${fmtPct(d.eom_occ)}</strong> — last year's actual ${d.short} fill rate</div>
+        </div>
+        <div class="slider-pct" id="slider-display">${fmtPct(fill)}</div>
+      </div>
+      <input type="range" min="0" max="100" value="${Math.round(fill*100)}" oninput="onSlide('${d.month}', this.value)" id="main-slider">
+      <div class="slider-subtext">
+        At this rate: <strong id="proj-nights-text">${c.projNights.toLocaleString()} nights booked</strong> → projected added revenue <strong id="proj-rev-text">${fmt$(c.projRev)}</strong> → projected monthly total <strong id="proj-total-text">${fmt$(c.total)}</strong>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-label">vs Last Year (SDLY)</div>
+        <div class="stat-val ${vsSDLY>=0?'up':'dn'}">${vsSDLY>=0?'+':''}${fmt$(vsSDLY)}</div>
+        <div class="stat-sub">Booked ${fmt$(d.cy_booked)} · Last year ${fmt$(d.sdly)}</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Open Nights Left</div>
+        <div class="stat-val">${d.open.toLocaleString()}</div>
+        <div class="stat-sub">${nightsChg > 0 ? nightsChg + ' booked this week' : nightsChg < 0 ? Math.abs(nightsChg) + ' added this week' : 'No change this week'}</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Avg Rate on Open Nights</div>
+        <div class="stat-val ${rateChg>10?'up':rateChg<-10?'dn':'flat'}">$${d.rate}</div>
+        <div class="stat-sub">${Math.abs(rateChg)>10?(rateChg>0?'↑ Up':'↓ Down')+' $'+Math.abs(Math.round(rateChg))+' vs last week':'No change from last week'}</div>
+      </div>
+      <div class="stat-cell" id="rate-needed-cell">
+        ${rateNeededHTML(d, c)}
+      </div>
+    </div>
+  `;
+
+  // Nav buttons
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === DATA.length - 1;
+}
+
+function buildSideList() {
+  document.getElementById('all-months-list').innerHTML = DATA.map((d,i) => {
+    const c = calc(d, fills[d.month]);
+    const s = statusOf(d,c);
+    const col = s==='green'?'var(--green-bar)':s==='amber'?'var(--amber-bar)':'var(--red-bar)';
+    const gapStr = d.cy_booked >= d.eom_target
+      ? `<span style="color:var(--green);font-weight:600">+${fmt$(d.cy_booked - d.eom_target)} above</span>`
+      : c.gap >= 0
+      ? `<span style="color:var(--green);font-weight:600">+${fmt$(c.gap)} above</span>`
+      : `<span style="color:var(--red);font-weight:600">${fmt$(Math.abs(c.gap))} below</span>`;
+    const fillLabel = `At ${fmtPct(fills[d.month])} fill`;
+    return `<div class="aml-row ${i===current?'':''}
+" onclick="goTo(${i})" style="${i===current?'background:var(--bg);':''}">
+      <div class="aml-left">
+        <div class="aml-dot" style="background:${col}"></div>
+        <div class="aml-month" style="${i===current?'font-weight:700;color:var(--ink)':''}">${d.short}</div>
+      </div>
+      <div class="aml-right">
+        <div class="aml-val">${gapStr}</div>
+        <div class="aml-sub">${fillLabel} · last year</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Rate card
+  const d = DATA[current];
+  const rateChg = d.rate - d.prior_rate;
+  let rateTagClass, rateTagText, rateNote;
+  if (rateChg > 10) {
+    rateTagClass = 'rate-tag-up';
+    rateTagText = `↑ Rates up $${Math.round(rateChg)}/night`;
+    rateNote = `Open inventory is priced <strong>$${Math.round(rateChg)} higher</strong> per night than last week. Demand is being tested at a higher price point.`;
+  } else if (rateChg < -10) {
+    rateTagClass = 'rate-tag-dn';
+    rateTagText = `↓ Rates down $${Math.abs(Math.round(rateChg))}/night`;
+    rateNote = `Open inventory dropped <strong>$${Math.abs(Math.round(rateChg))}</strong> per night vs last week. Worth watching whether this drives pickup.`;
+  } else {
+    rateTagClass = 'rate-tag-flat';
+    rateTagText = '→ Rates unchanged';
+    rateNote = `No significant rate movement on open inventory this week.`;
+  }
+
+  document.getElementById('rate-card').innerHTML = `
+    <div class="side-card-title">Rate Movement — ${d.short}</div>
+    <div class="rate-tag ${rateTagClass}">${rateTagText}</div>
+    <div class="rate-note">${rateNote}</div>
+  `;
+}
+
+function onSlide(month, val) {
+  fills[month] = parseInt(val) / 100;
+  const d = DATA.find(x=>x.month===month);
+  const c = calc(d, fills[month]);
+  document.getElementById('slider-display').textContent = fmtPct(fills[month]);
+  document.getElementById('proj-nights-text').textContent = c.projNights.toLocaleString() + ' nights booked';
+  document.getElementById('proj-rev-text').textContent = fmt$(c.projRev);
+  document.getElementById('proj-total-text').textContent = fmt$(c.total);
+  document.getElementById('proj-leg').textContent = '+' + fmt$(c.projRev);
+
+  // Update rate needed cell
+  document.getElementById('rate-needed-cell').innerHTML = rateNeededHTML(d, c);
+
+  // Update proj bar width
+  const maxVal = Math.max(c.total, d.eom_target, d.cy_booked) * 1.08;
+  const bookedW = Math.min((d.cy_booked / maxVal) * 100, 100);
+  const projW = Math.min((c.projRev / maxVal) * 100, 40);
+  document.getElementById('proj-fill').style.width = projW + '%';
+
+  buildPortStrip();
+  buildSideList();
+  buildNav();
+}
+
+function goTo(i) {
+  current = i;
+  render();
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next >= 0 && next < DATA.length) goTo(next);
+}
+
+function render() {
+  buildPortStrip();
+  buildNav();
+  buildCard();
+  buildSideList();
+}
+
+render();
+</script>
+</body>
+</html>
